@@ -17,3 +17,9 @@ def saludar():
 def despedir():
     return "<p>Bye, World!</p>"
 
+@app.route("/dado/<int:caras>")
+def dado(caras):
+    from random import randint
+    numero = randint(1,caras)
+    return f"<h2>Dado de {caras} caras, salio {numero}!</h2>"
+
