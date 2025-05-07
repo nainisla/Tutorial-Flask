@@ -1,4 +1,5 @@
-from flask import Flask , url_for
+from flask import Flask , url_for, render_template, request
+
 import sqlite3
 
 app = Flask(__name__)
@@ -43,12 +44,12 @@ def agregar_usuario():
     cerrarConexion()
     return f"Usuario {usuario} agregado con email {email}"
 
-@app.route("/borrar")
+@app.route("/borrar/<int:id>")
 def borrar_usuario():
     abrirConexion()
     cursor = db.cursor()
     #id = request.argst.get("id")    para agregar desde la url
-    id = 2                          #http://127.0.0.1:5000/borrar?id=2
+    #http://127.0.0.1:5000/borrar?id=2
     cursor.execute("DELETE FROM usuarios WHERE id =?",(id,))
     db.commit()
     cerrarConexion()
@@ -63,6 +64,26 @@ def nombre_email_usurio(id):
     resultado = cursor.fetchone()
     cerrarConexion()
     return f"mostrar{resultado["usuario"]} y email {resultado["email"]} "
+
+@app.route("/mostrar-datos-plantilla/<int:id>")
+def datos_plantilla(id):
+    abrirConexion()
+    cursor = db.cursor()
+    cursor.execute("SELECT id,usuario ,email,telefono,direccion FROM usuarios WHERE id = ?", (id,))
+    res = cursor.fetchone()
+    cerrarConexion()
+    usuario = None
+    email = None 
+    telefono = None
+    direccion = None
+    if res != None:
+       usuario = res['usuario']
+       email = res['email']
+       telefono = res['telefono']
+       direccion = res['direccion']
+    return render_template("datos2.html", id=id, usuario=usuario, email=email , telefono=telefono, direccion=direccion )
+   
+
 
 @app.route("/")
 def principal():
